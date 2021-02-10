@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class UIGameControl : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class UIGameControl : MonoBehaviour
 
             scoreManager.AddScore(new Score(PlayerName, PlayerScore.playerScore));
 
-
+            /*
             if (scoreManager.ranked != -1)
             {
 
@@ -55,6 +56,15 @@ public class UIGameControl : MonoBehaviour
             {
                 scoreboard.flag = 2;
             }
+            */
+
+            //Branchless conversion=====================================================
+            var scoremanagerif = Convert.ToInt16(scoreManager.ranked != -1);
+            scoreboard.ranked = scoreManager.ranked * scoremanagerif;
+            scoreboard.flag = (1 * scoremanagerif) + (2 * Convert.ToInt16(!(scoreManager.ranked != -1)));
+
+            //==========================================================================
+
             BeenSent = true;
         }
         

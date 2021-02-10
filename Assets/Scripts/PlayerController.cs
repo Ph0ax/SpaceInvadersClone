@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
         if(PointerDown == 1) PlayerMoveLeft();
         if(PointerDown == 2) PlayerMoveRight();
 
-        if (Time.timeSinceLevelLoad > nextCooldown && turbo_flag == true)
+        if (Time.timeSinceLevelLoad > nextCooldown && turbo_flag == true) //branching this if would not be transparent at all. Making changes to it would be quite impossible.
         {
             if(tick == 0)
             {
@@ -86,6 +86,7 @@ public class PlayerController : MonoBehaviour
         int h = 1;
         if (player.position.x < minBound && h < 0) h = 0;
         else if (player.position.x > maxBound && h > 0) h = 0;
+        
         player.position += Vector3.right * h * speed;
 
     }
@@ -104,11 +105,19 @@ public class PlayerController : MonoBehaviour
     }
 
     public void TurboOnClick()
-    {
+    {   
+        /*
         if (nextCooldown <= Time.time)
         {
             turbo_flag = true;
         }
+        */
+
+
+        //Branchless conversion=========================================================
+        turbo_flag = nextCooldown <= Time.time;
+
+        //==============================================================================
         
     }
 }

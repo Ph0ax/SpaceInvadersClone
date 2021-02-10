@@ -20,20 +20,18 @@ public class ScoreboardInfo : MonoBehaviour
 
     void Update()
     {
-        CheckFlag = flag;
 
-        if (flag == 1)
+        switch (flag) //swapped if, for switch. More optimized and faster in execution;
         {
-            scoreText.text = "Congratulations! You are " + ranked + " in scoreboard";
-            scoreText.color = Color.green;
+            case (1):
+                scoreText.text = "Congratulations! You are " + ranked + " in scoreboard";
+                scoreText.color = Color.green;
+                break;
+            case (2):
+                scoreText.color = Color.red;
+                scoreText.text = "Im sorry, but you did not managed to get onto the scoreboard :(";
+                break;
         }
-        
-        if (flag == 2)
-        {
-            scoreText.color = Color.red;
-            scoreText.text = "Im sorry, but you did not managed to get onto the scoreboard :(";
-        }
-
         
         
     }

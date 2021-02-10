@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class EnemyController : MonoBehaviour
 {
@@ -65,7 +66,10 @@ public class EnemyController : MonoBehaviour
     {
         iterator = 0;
 
+
+        /* this is the best example of how efficiently we can avoid branching the code.
         if (timer >= 5.0f && timer <= 7.0f) Fire = true;
+
         else
         {
             if(Fire != false)
@@ -78,9 +82,24 @@ public class EnemyController : MonoBehaviour
             Fire = false;
             if (timer > 7.0f) timer = 0;
         }
+        */
+
+        //branchless Fire if statements conversion ===============
+        Fire = (timer >= 5.0f) && (timer <= 7.0f);
+        timer = timer * Convert.ToSingle(!(timer > 7.0f)) + 0; // if (timer > 7.0f) timer = 0;
+
+        if (Fire == true) 
+            for (int i = 0; i < NumberOfEnemies; i++) 
+                shotflag[i] = false;
+
+        //=============================================
+
+
+
 
         enemyHolder.position += Vector3.right * speed;
 
+        /* Another part of code for potentiall branchless code implement
         if(LastChilds != enemyHolder.childCount)
         {
             firesuppresor -= 0.002f;
@@ -88,39 +107,59 @@ public class EnemyController : MonoBehaviour
             else speed -= acceleration;
             LastChilds = enemyHolder.childCount;
         }
-        
+        */
+
+
+        //Branchless conversion ========================================================
+        float ChildsEnemyBool = Convert.ToSingle(LastChilds != enemyHolder.childCount);
+        firesuppresor -= 0.002f * ChildsEnemyBool;
+        speed += acceleration * Convert.ToSingle(speed > 0) * ChildsEnemyBool;
+        speed -= acceleration * Convert.ToSingle(!(speed > 0)) * ChildsEnemyBool;
+        LastChilds = (LastChilds * Convert.ToInt16(!(LastChilds != enemyHolder.childCount))) + (enemyHolder.childCount * (int)ChildsEnemyBool);
+
+        //==============================================================================
+
         foreach (Transform enemy in enemyHolder)
         {
 
             if (Fire == true && enemy.tag == "EnemyShot") 
             {
                 
-                if ((Random.value > firesuppresor) && (shotflag[iterator] == false))
+                if ((UnityEngine.Random.value > firesuppresor) && (shotflag[iterator] == false)) //change to made specific of using UnityEngine.random, not System.random
                 {
                     shotflag[iterator] = true;
                     Instantiate(shot, enemy.position, enemy.rotation);
                 }
            
             }
-
             iterator += 1;
+
 
             if (enemy.position.x < -10.5 || enemy.position.x > 10.5)
             {
                 speed = -speed;
                 enemyHolder.position += Vector3.down * 0.5f;
-                return;
-            } 
+                return; //return is crucial to proper execution of this if. Thus we will not un-branch it.
+            }
 
+
+            /*
             if (enemy.position.y <= -18)
             {
                 UIGameControl.isPlayerDead = true;
                 Time.timeScale = 0;
             }
-            
+            */
+
+
+            //Branchless conversion ========================================================
+            UIGameControl.isPlayerDead = enemy.position.y <= -18;
+            Time.timeScale = Convert.ToInt16(!(enemy.position.y <=-18)) + 0;
+            //==============================================================================
+
         }
 
-        if(enemyHolder.childCount == 0)
+        if (enemyHolder.childCount == 0) //changes to this if statement would be just cosmetic. After this if we don't have any other instructions left to do, so compiler branching it won't be any problem whatsoever.
         {
             UIGameControl.win = true;
         }
@@ -138,6 +177,7 @@ public class EnemyController : MonoBehaviour
         Enemies = new GameObject[NumberOfEnemies];
         for (int i = 0; i < NumberOfEnemies; i++)
         {
+            /*
             if (i % 8 != 0)
             {
                 position_x += spread;
@@ -147,6 +187,18 @@ public class EnemyController : MonoBehaviour
                 position_x = x_min;
                 height -= 1.5f;
             }
+            */
+
+            //Branchless conversion ========================================================
+            var positive = Convert.ToSingle(i % 8 != 0);
+            var negative = Convert.ToSingle(!(i % 8 != 0));
+            position_x += (positive * spread);
+            position_x = (position_x *positive ) + (x_min * negative);
+            height -= (1.5f * negative);
+
+            //==============================================================================
+
+
             if (i < 8)
             {
                 GameObject x2 = Instantiate(Enemy2, new Vector3(position_x, height, 0), Quaternion.identity);

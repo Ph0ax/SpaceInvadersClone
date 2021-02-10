@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 public class CameraAdjust : MonoBehaviour
@@ -10,6 +11,10 @@ public class CameraAdjust : MonoBehaviour
     public const float Ratio21_9 = 2.333333333333333f;
 
     public float sceneWidth = 25;
+
+    float unitsPerPixel;
+    float desiredHalfHeight;
+    float switcher;
 
     Camera _camera;
 
@@ -28,23 +33,30 @@ public class CameraAdjust : MonoBehaviour
         //print(ratio);
         float diff = Mathf.Abs(Screen.height - Screen.width);
 
-        if(diff > 900)
-        {
-            float unitsPerPixel = sceneWidth / Screen.width;
-            float desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
-            _camera.orthographicSize = desiredHalfHeight;
-        }
+        switcher = Convert.ToSingle(diff > 1000);
+
+        //if (diff > 900)
+        //{
+        //    unitsPerPixel = sceneWidth / Screen.width;
+        //    desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
+        //   _camera.orthographicSize = desiredHalfHeight;
+        //}
+
+        //branchless if
+        unitsPerPixel = (sceneWidth / Screen.width) * switcher;
+        desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height * switcher;
+        _camera.orthographicSize = (_camera.orthographicSize * Convert.ToSingle(!(diff >1000))) + (desiredHalfHeight * switcher);
 
 
         //if (ratio <= Ratio4_3 || ratio >= Ratio16_9)
-       // {
-       //     float unitsPerPixel = sceneWidth / Screen.width;
-         //   float desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
-          //  _camera.orthographicSize = desiredHalfHeight;
+        // {
+        //     float unitsPerPixel = sceneWidth / Screen.width;
+        //   float desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
+        //  _camera.orthographicSize = desiredHalfHeight;
         //}
-       
-        
 
-        
+
+
+
     }
 }
